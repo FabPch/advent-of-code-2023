@@ -53,8 +53,6 @@ GO
 
 ---------------------- SOLUTION ----------------------
 
---SELECT * FROM dbo.extract_number_with_index_and_size('14...5!..6')
-
 IF OBJECT_ID('tempdb..#special_char_indexes') IS NOT NULL
     DROP TABLE #special_char_indexes
 
@@ -77,10 +75,7 @@ CREATE TABLE #special_char_indexes (line_number INT, [index] INT)
 CREATE TABLE #star_indexes (line_number INT, [index] INT)
 CREATE TABLE #numbers_indexed (line_number INT, [index] INT, size INT, [value] INT)
 
-DECLARE @max_red INT = 12
-DECLARE @max_green INT = 13
-DECLARE @max_blue INT = 14
-
+-- before loading: sed = advent-3-input-nb.txt | sed 'N;s/\n/A/g' > advent-3-input-nb-test.txt
 BULK INSERT #advent_3
    FROM 'C:\Users\Fabien\Documents\rise-again\advent-of-code-2023\advent-3-input-nb-test.txt'
    WITH (
@@ -88,15 +83,11 @@ BULK INSERT #advent_3
 	  , FIELDTERMINATOR = 'A'
    );
 
---SELECT TOP 10 * FROM #advent_3
-
 INSERT INTO #special_char_indexes (line_number, [index])
 SELECT CAST(line_number AS INT) AS line_number
     , [index]
 FROM #advent_3
     CROSS APPLY dbo.extract_special_char_with_index(word, '%[^0-9\.]%')
-
---SELECT TOP 10 * FROM #special_char_indexes
 
 INSERT INTO #numbers_indexed (line_number, [index], size, [value])
 SELECT CAST(line_number AS INT) AS line_number
